@@ -64,7 +64,7 @@ p {
   color: var(--color-text);
 }
 
-ul {
+main ul {
   background-color: var(--color-surface);
   padding: 1.5rem 2rem;
   border-radius: 8px;
