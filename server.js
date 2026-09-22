@@ -1,10 +1,13 @@
+import 'dotenv/config';
 import express from 'express';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import { testConnection } from './src/models/db.js';
+import { getAllOrganizations } from './src/models/organizations.js';
+import { getAllProjects } from './src/models/projects.js';
+import { getAllCategories } from './src/models/categories.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
+const NODE_ENV = process.env.NODE_ENV || 'development';
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
@@ -14,17 +17,32 @@ app.get('/', async (req, res) => {
 });
 
 app.get('/organizations', async (req, res) => {
-  res.render('organizations', { title: 'Organizations' });
+  const organizations = await getAllOrganizations();
+  const title = 'Organizations';
+
+  res.render('organizations', { title, organizations });
 });
 
 app.get('/projects', async (req, res) => {
-  res.render('projects', { title: 'Projects' });
+  const projects = await getAllProjects();
+  const title = 'Projects';
+
+  res.render('projects', { title, projects });
 });
 
 app.get('/categories', async (req, res) => {
-  res.render('categories', { title: 'Categories' });
+  const categories = await getAllCategories();
+  const title = 'Categories';
+
+  res.render('categories', { title, categories });
 });
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+app.listen(port, async () => {
+  try {
+    await testConnection();
+    console.log(`Server is running at http://127.0.0.1:${port}`);
+    console.log(`Environment: ${NODE_ENV}`);
+  } catch (error) {
+    console.error('Error connecting to the database:', error);
+  }
 });
